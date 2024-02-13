@@ -4,6 +4,7 @@
  *
  * @format
  */
+import {TextEncoder} from '@int/rn-native-utils';
 import TE from 'text-encoding';
 import React from 'react';
 import type {PropsWithChildren} from 'react';
@@ -19,11 +20,9 @@ import {
   Alert
 } from 'react-native';
 
-window.TextEncoder = TE.TextEncoder;
-window.TextDecoder = TE.TextDecoder;
-
-window.encoder = new TextEncoder('utf-8');
-window.decoder = new TextDecoder('utf-8');
+window.encoder = new TE.TextEncoder('utf-8');
+window.decoder = new TE.TextDecoder('utf-8');
+window.fastEncoder = new TextEncoder();
 
 import {convertToMobileDisplay} from './mobileResponsive';
 
@@ -34,7 +33,51 @@ function testEncode() {
   const startTime = Date.now();
   window.encoded = window.encoder.encode(testVal);
   const execTime = "ExecutionTime = " + (Date.now() - startTime);
-  console.error(execTime);
+  Alert.alert('alert',execTime);
+}
+
+
+function testEncode100() {
+  const startTime = Date.now()
+  for(let i = 0 ; i < 100 ; i ++) {
+    window.encoded = window.encoder.encode(testVal);
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+
+function testEncodeSmall10k() {
+  const startTime = Date.now()
+  for(let i = 0 ; i < 10000 ; i ++) {
+    window.encoder.encode('Mommy here');
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+
+
+function testFastEncode() {
+  const startTime = Date.now();
+  window.encoded = fastEncoder.encode(testVal);
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+
+function testFastEncode100() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 100 ; i ++) {
+    window.encoded = fastEncoder.encode(testVal);
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+
+function testFastEncodeSmall10k() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 10000 ; i ++) {
+    fastEncoder.encode('Mommy here');
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
   Alert.alert('alert',execTime);
 }
 
@@ -42,7 +85,44 @@ function testDecode() {
   const startTime = Date.now();
   window.decoder.decode(window.encoded);
   const execTime = "ExecutionTime = " + (Date.now() - startTime);
-  console.error(execTime);
+  Alert.alert('alert',execTime);
+}
+function testDecode100() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 100 ; i ++) {
+    window.decoder.decode(window.encoded);
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+function testDecodeSmall10k() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 10000 ; i ++) {
+    window.decoder.decode(new Uint8Array([1,2,3,4,5]));
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+function testFastDecode() {
+  const startTime = Date.now();
+  fastEncoder.decode(window.encoded);
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+function testFastDecode100() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 100 ; i ++) {
+    fastEncoder.decode(window.encoded);
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
+  Alert.alert('alert',execTime);
+}
+function testFastDecodeSmall10k() {
+  const startTime = Date.now();
+  for(let i = 0 ; i < 10000 ; i ++) {
+    fastEncoder.decode(new Uint8Array([1,2,3,4,5]));
+  }
+  const execTime = "ExecutionTime = " + (Date.now() - startTime);
   Alert.alert('alert',execTime);
 }
 
@@ -112,22 +192,55 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <Button title="Test" onPress={() => {
+      {/* <Button title="Test" onPress={() => {
           const startTime = Date.now();
           convertToMobileDisplay(testVal)
           const execTime = "ExecutionTime = " + (Date.now() - startTime);
           console.error(execTime);
           Alert.alert('alert',execTime);
-        }}></Button>
+        }}></Button> */}
           <Button title="Test Encode" onPress={() => {
             testEncode()
-        }}></Button>
+          }}></Button>
+            <Button title="Test Encode 100" onPress={() => {
+              testEncode100()
+          }}></Button>
+          <Button title="Test Encode 10k small strings" onPress={() => {
+              testEncodeSmall10k()
+          }}></Button>
           <Button title="Test Decode " onPress={() => {
-            testDecode()
+              testDecode()
+          }}></Button>
+              <Button title="Test Decode 100 " onPress={() => {
+              testDecode100()
+          }}></Button>
+          <Button title="Test Decode 10k small strings" onPress={() => {
+              testDecodeSmall10k()
+          }}></Button>
+
+          <View style={{ height: 40 }} />
+
+          <Button title="Test Fast Encode" onPress={() => {
+              testFastEncode()
+          }}></Button>
+          <Button title="Test Fast Encode 100" onPress={() => {
+              testFastEncode100()
+          }}></Button>
+          <Button title="Test Fast Encode 10k small strings" onPress={() => {
+              testFastEncodeSmall10k()
+          }}></Button>
+         <Button title="Test Fast Decode " onPress={() => {
+            testFastDecode()
         }}></Button>
-          <Button title="Test Convert " onPress={() => {
+        <Button title="Test Fast Decode 100" onPress={() => {
+            testFastDecode100()
+        }}></Button>
+        <Button title="Test Fast Decode 10k small strings" onPress={() => {
+            testFastDecodeSmall10k()
+        }}></Button>
+          {/* <Button title="Test Convert " onPress={() => {
             testConvert()
-        }}></Button>
+        }}></Button> */}
     </SafeAreaView>
   );
 }

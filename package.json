@@ -13,9 +13,9 @@
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
     "cheerio": "^1.0.0-rc.12",
-    "fastestsmallesttextencoderdecoder": "^1.0.22",
     "react": "18.2.0",
     "react-native": "0.73.3",
+    "@int/rn-native-utils": "0.1.2",
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {
